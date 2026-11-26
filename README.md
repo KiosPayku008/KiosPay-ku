@@ -1,1 +1,1 @@
-# KiosPayku-
+# KiosPay-ku

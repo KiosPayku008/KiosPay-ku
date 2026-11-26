@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080d18">
+<title>KiosPayku — QRIS Demo</title>
+<style>
+:root{--bg:#080d18;--panel:#101a2b;--panel2:#14223a;--line:#263957;--blue:#3988ff;--cyan:#53c7ff;--text:#eef5ff;--muted:#9aacc5;--green:#31c48d;--yellow:#f5c451}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% -10%,#15335b 0,transparent 35%),var(--bg);color:var(--text);font:15px system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.wrap{max-width:1080px;margin:auto;padding:18px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0 22px}.brand{font-weight:850;font-size:24px;letter-spacing:.4px}.brand span{color:var(--cyan)}.tag{font-size:11px;color:#b9d8ff;border:1px solid #315887;padding:6px 9px;border-radius:99px}
+nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}.tab,button{border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:11px 14px;border-radius:11px;font-weight:650;cursor:pointer}.tab.active,button.primary{background:linear-gradient(120deg,#1764d8,#248fe8);border-color:#3988ff}.tab:hover,button:hover{filter:brightness(1.12)}button:disabled{opacity:.5;cursor:not-allowed}
+.grid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px}.card{background:linear-gradient(160deg,#111d31,#0d1626);border:1px solid var(--line);border-radius:18px;padding:19px;box-shadow:0 14px 40px #0003}.card h2{font-size:18px;margin:0 0 15px}.muted{color:var(--muted)}label{display:block;color:#c5d5eb;font-size:13px;margin:12px 0 7px}input,select{width:100%;background:#091321;border:1px solid #2a4264;color:var(--text);padding:13px;border-radius:10px;font:inherit;outline:none}input:focus,select:focus{border-color:var(--blue)}.row{display:flex;gap:10px}.row>*{flex:1}.hint{font-size:12px;color:var(--muted);line-height:1.5}.notice{background:#2a2110;border:1px solid #725b22;color:#ffe4a1;padding:12px;border-radius:12px;font-size:12px;line-height:1.5;margin-bottom:16px}.result{text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:300px}.qr{width:190px;height:190px;background:white;border-radius:8px;padding:10px;display:grid;place-items:center;margin:12px auto}.fakeqr{width:100%;height:100%;background:repeating-conic-gradient(#111 0 25%,#fff 0 50%) 0/13px 13px;position:relative;overflow:hidden}.fakeqr:after{content:"DEMO";position:absolute;inset:40% 15%;background:white;color:#111;font-weight:900;display:grid;place-items:center;font-size:23px;transform:rotate(-25deg);border:2px solid #111}.amount{font-size:30px;font-weight:850;margin:6px}.status{display:inline-block;padding:6px 10px;border-radius:99px;background:#193b32;color:#82efc5;font-size:12px}.hidden{display:none!important}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:15px}.stat{background:#0a1423;border:1px solid var(--line);padding:13px;border-radius:13px}.stat b{font-size:21px;display:block}.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:550px}th,td{text-align:left;padding:12px 9px;border-bottom:1px solid #263650;font-size:13px}th{color:#9eb4d2}.pill{font-size:11px;padding:4px 8px;border-radius:20px;background:#25354c}.paid{color:#7ce7b9}.pending{color:#ffdb7b}.empty{text-align:center;color:var(--muted);padding:25px}.footer{text-align:center;color:#7185a2;font-size:11px;padding:25px 5px}
+@media(max-width:720px){.grid{grid-template-columns:1fr}.wrap{padding:13px}.card{padding:15px}.stats{grid-template-columns:1fr 1fr}.brand{font-size:21px}.row{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top"><div class="brand">Kios<span>Payku</span></div><div class="tag">SIMULATOR • BUKAN QRIS AKTUAL</div></header>
+<div class="notice"><b>Mode demo saja.</b> QR bergaris di bawah hanyalah ilustrasi dan tidak dapat dipindai atau digunakan untuk membayar. Tombol “Simulasikan pembayaran” hanya mengubah data lokal di browser. Untuk transaksi sungguhan, hubungkan ke penyedia QRIS resmi melalui backend yang aman.</div>
+<nav>
+<button class="tab active" data-page="create">Buat Tagihan</button>
+<button class="tab" data-page="history">Riwayat</button>
+<button class="tab" data-page="admin">Dashboard Admin</button>
+</nav>
+
+<section id="create" class="page">
+<div class="grid">
+<div class="card">
+<h2>Buat tagihan demo</h2>
+<label>Nama pelanggan (opsional)</label><input id="customer" placeholder="Contoh: Andi" maxlength="60">
+<label>Nominal (Rp)</label><input id="amount" type="number" min="1000" max="100000000" step="1000" placeholder="Contoh: 25000">
+<div class="row"><div><label>Catatan</label><input id="note" maxlength="80" placeholder="Pembelian produk"></div><div><label>Masa berlaku</label><select id="expiry"><option value="15">15 menit</option><option value="30">30 menit</option><option value="60">60 menit</option></select></div></div>
+<p class="hint">Nominal hanya untuk latihan alur pembuatan invoice. Tidak ada dana yang ditagihkan.</p>
+<button class="primary" id="generate" style="width:100%;margin-top:12px">Buat Invoice Demo</button>
+</div>
+<div class="card result" id="result"><div style="font-size:38px">▦</div><h2>Tagihan akan tampil di sini</h2><p class="muted">Isi nominal lalu tekan Buat Invoice Demo.</p></div>
+</div>
+</section>
+
+<section id="history" class="page hidden">
+<div class="card"><h2>Riwayat transaksi demo</h2><div class="tablewrap" id="historyTable"></div><button id="clear" style="margin-top:14px">Hapus semua data demo</button></div>
+</section>
+
+<section id="admin" class="page hidden">
+<div class="card"><h2>Dashboard admin</h2><p class="hint">Ringkasan data yang tersimpan di browser/perangkat ini saja.</p><div class="stats">
+<div class="stat"><span class="muted">Total invoice</span><b id="total">0</b></div>
+<div class="stat"><span class="muted">Menunggu</span><b id="waiting">0</b></div>
+<div class="stat"><span class="muted">Lunas (simulasi)</span><b id="paid">0</b></div>
+</div><div class="tablewrap" id="adminTable"></div></div>
+</section>
+<div class="footer">© <span id="year"></span> KiosPayku • Demo lokal • Jangan gunakan sebagai bukti pembayaran.</div>
+</div>
+<script>
+const KEY='kiospayku_demo_transactions_v1';
+const rupiah=n=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(n);
+const load=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch{return []}};
+const save=data=>localStorage.setItem(KEY,JSON.stringify(data));
+let tx=load(), currentId=null;
+const el=id=>document.getElementById(id);
+function escapeHTML(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function statusLabel(t){return t.status==='paid'?'Lunas (simulasi)':t.status==='expired'?'Kedaluwarsa':'Menunggu'}
+function renderRows(target){
+ if(!tx.length){el(target).innerHTML='<div class="empty">Belum ada transaksi.</div>';return}
+ el(target).innerHTML='<table><thead><tr><th>Invoice</th><th>Pelanggan</th><th>Nominal</th><th>Status</th><th>Waktu</th></tr></thead><tbody>'+tx.slice().reverse().map(t=>`<tr><td>${escapeHTML(t.id)}</td><td>${escapeHTML(t.customer||'-')}</td><td>${rupiah(t.amount)}</td><td class="${t.status==='paid'?'paid':'pending'}">${statusLabel(t)}</td><td>${new Date(t.created).toLocaleString('id-ID')}</td></tr>`).join('')+'</tbody></table>';
+}
+function renderAdmin(){el('total').textContent=tx.length;el('waiting').textContent=tx.filter(t=>t.status==='pending').length;el('paid').textContent=tx.filter(t=>t.status==='paid').length;renderRows('adminTable')}
+function renderHistory(){renderRows('historyTable')}
+function showPage(name){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('hidden',p.id!==name));document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.page===name));if(name==='history')renderHistory();if(name==='admin')renderAdmin()}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
+function updateStatus(id,status){tx=load();const t=tx.find(x=>x.id===id);if(!t)return;t.status=status;save(tx);renderHistory();renderAdmin();if(currentId===id)showInvoice(t)}
+function showInvoice(t){
+ currentId=t.id;
+ el('result').innerHTML=`<div class="status">${statusLabel(t)}</div><div class="qr"><div class="fakeqr"></div></div><div class="hint">KODE QR ILUSTRASI — TIDAK BISA DIPINDAI</div><div class="amount">${rupiah(t.amount)}</div><div class="hint">Invoice: ${escapeHTML(t.id)}</div><div class="hint">${escapeHTML(t.customer||'Pelanggan')} • ${escapeHTML(t.note||'Tanpa catatan')}</div><p class="hint">Batas waktu: ${new Date(t.expires).toLocaleString('id-ID')}</p><div class="row" style="width:100%;margin-top:10px"><button class="primary" id="simulate">Simulasikan pembayaran</button><button id="copyid">Salin ID</button></div><p class="hint">Simulasi ini bukan konfirmasi pembayaran nyata.</p>`;
+ el('simulate').addEventListener('click',()=>updateStatus(t.id,'paid'));
+ el('copyid').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(t.id);el('copyid').textContent='Tersalin'}catch{el('copyid').textContent=t.id}});
+}
+el('generate').addEventListener('click',()=>{
+ const amount=Number(el('amount').value);
+ if(!Number.isInteger(amount)||amount<1000||amount>100000000){alert('Masukkan nominal bulat antara Rp1.000 dan Rp100.000.000.');return}
+ const now=Date.now(),mins=Number(el('expiry').value);
+ const t={id:'KP-'+now.toString(36).toUpperCase(),customer:el('customer').value.trim(),amount,note:el('note').value.trim(),created:now,expires:now+mins*60000,status:'pending'};
+ tx=load();tx.push(t);save(tx);showInvoice(t);
+});
+el('clear').addEventListener('click',()=>{if(confirm('Hapus seluruh riwayat demo di perangkat ini?')){tx=[];save(tx);renderHistory();renderAdmin();el('result').innerHTML='<h2>Data demo dihapus</h2>'}});
+el('year').textContent=new Date().getFullYear();
+renderHistory();renderAdmin();
+</script>
+</body>
+</html>
